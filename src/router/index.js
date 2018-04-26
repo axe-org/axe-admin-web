@@ -4,8 +4,6 @@ import HelloWorld from '@/components/HelloWorld'
 import User from '@/components/User'
 import OfflinePackage from '@/components/OfflinePackage'
 import Help from '@/components/help/Help'
-import IndexHelp from '@/components/help/Index'
-import AppHelp from '@/components/help/App'
 
 import App from '@/components/app/App'
 import AppDetail from '@/components/app/AppDetail'
@@ -13,6 +11,10 @@ import AppForm from '@/components/app/AppForm'
 
 import Timeline from '@/components/timeline/Overview'
 import AppTimeline from '@/components/timeline/App'
+
+import ModuleList from '@/components/module/ModuleList'
+import ModuleOverview from '@/components/module/ModuleOverview'
+import ModuleDetail from '@/components/module/ModuleDetail'
 
 Vue.use(Router)
 
@@ -31,26 +33,19 @@ export default new Router({
       component: OfflinePackage,
       meta: { title: '离线包管理' }
     },
-    { path: '/help',
-      component: Help,
-      children: [
-        { path: 'index', component: IndexHelp, meta: { title: '帮助首页' } },
-        { path: 'app', component: AppHelp, meta: { title: '帮助' } }
-      ]
-    },
+    { path: '/help', component: Help, meta: {title: '帮助文档'} },
     {
       path: '/app',
       component: App,
       children: [
-        { path: 'help', component: AppHelp, meta: { title: 'APP帮助' } },
         { path: 'new', component: AppForm, meta: { title: '创建新版本' } },
         { path: 'version/:version', component: AppDetail }
       ]
     },
     { path: '/apptimeline/:lineId', component: AppTimeline },
-    {
-      path: '/timeline',
-      component: Timeline
-    }
+    { path: '/timeline', component: Timeline },
+    { path: '/modulelist', component: ModuleList, meta: { title: '模块列表' } },
+    {path: '/module-overview/:moduleId', component: ModuleOverview, meta: {title: '模块概览'}},
+    {path: '/module/:moduleId/version/:version', component: ModuleDetail, meta: {title: '模块版本详情'}}
   ]
 })

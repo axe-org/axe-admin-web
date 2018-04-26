@@ -12,7 +12,8 @@ const store = new Vuex.Store({
     lastActive: '',
     userAdmin: false,
     appAdmin: false,
-    moduleList: []
+    moduleList: [],
+    moduleIdList: []
   },
   mutations: {
     [TYPES.LOGIN_MUTATION] (state, payload) {
@@ -23,6 +24,11 @@ const store = new Vuex.Store({
       state.userId = payload.userId
       state.appAdmin = payload.appAdmin
       state.moduleList = payload.moduleList
+      let idlist = []
+      payload.moduleList.forEach(module => {
+        idlist.push(module.id)
+      })
+      state.moduleIdList = idlist
       console.log('hello ,', payload.userName)
     },
     [TYPES.LOGOUT_MUTATION] (state) {
@@ -31,6 +37,8 @@ const store = new Vuex.Store({
       state.userName = ''
       state.userAdmin = false
       state.appAdmin = false
+      state.moduleIdList = []
+      state.moduleList = []
     }
   }
 })

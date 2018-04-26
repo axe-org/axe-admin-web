@@ -16,9 +16,9 @@
         <el-date-picker v-model="newAppVersion.testFinished" type="date" placeholder="选择日期"/>
         <br/><span style="color: #909399">{{ desc['testFinished'] }}</span>
       </el-form-item>
-      <el-form-item :label="title.sumbitTime" prop="sumbitTime">
-        <el-date-picker v-model="newAppVersion.sumbitTime" type="date" placeholder="选择日期"/>
-        <br/><span style="color: #909399">{{ desc['sumbitTime'] }}</span>
+      <el-form-item :label="title.submitTime" prop="submitTime">
+        <el-date-picker v-model="newAppVersion.submitTime" type="date" placeholder="选择日期"/>
+        <br/><span style="color: #909399">{{ desc['submitTime'] }}</span>
       </el-form-item>
       <el-form-item :label="title.finishedTime" prop="finishedTime">
         <el-date-picker v-model="newAppVersion.finishedTime" type="date" placeholder="选择日期"/>
@@ -43,21 +43,21 @@ export default {
         startTime: '',
         developFinished: '',
         testFinished: '',
-        sumbitTime: '',
+        submitTime: '',
         finishedTime: ''
       },
       desc: {
         startTime: '随便选一个开始时间， 需求开始也是开始。',
         developFinished: '开发完成之前，所有该版本上的组件必须完成接入。',
         testFinished: '测试完成之前，必须完成所有模块的封板，即所有模块测试通过，打prd版本。',
-        sumbitTime: '提交APP Store审核时间。',
+        submitTime: '提交APP Store审核时间。',
         finishedTime: '整个版本完成时间，所有时间不能修改，这里只是简单记录与统计，不是完全的任务管理，所以不做任务延期处理。'
       },
       title: {
         startTime: '开始时间',
         developFinished: '开发完成时间',
         testFinished: '测试完成时间',
-        sumbitTime: '提交审核',
+        submitTime: '提交审核',
         finishedTime: '完成时间'
       },
       rules: {
@@ -74,7 +74,7 @@ export default {
         testFinished: [
           { type: 'date', required: true, message: '请设置版本测试完成时间', trigger: 'change' }
         ],
-        sumbitTime: [
+        submitTime: [
           { type: 'date', required: true, message: '请设置版本提交审核时间', trigger: 'change' }
         ],
         finishedTime: [
@@ -111,7 +111,7 @@ export default {
               duration: 0
             })
           }
-          if (this.newAppVersion.testFinished >= this.newAppVersion.sumbitTime) {
+          if (this.newAppVersion.testFinished >= this.newAppVersion.submitTime) {
             return this.$message({
               showClose: true,
               message: '提交审核时间应该在测试完成之后。',
@@ -119,7 +119,7 @@ export default {
               duration: 0
             })
           }
-          if (this.newAppVersion.sumbitTime >= this.newAppVersion.finishedTime) {
+          if (this.newAppVersion.submitTime >= this.newAppVersion.finishedTime) {
             return this.$message({
               showClose: true,
               message: '项目完成时间应该在提交审核之后。',
@@ -142,7 +142,7 @@ export default {
             version: this.newAppVersion.version,
             actions: []
           }
-          let actions = ['startTime', 'developFinished', 'testFinished', 'sumbitTime', 'finishedTime']
+          let actions = ['startTime', 'developFinished', 'testFinished', 'submitTime', 'finishedTime']
           actions.forEach((action, index) => {
             form.actions.push({
               type: index + 1,

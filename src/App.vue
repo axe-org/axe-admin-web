@@ -6,21 +6,13 @@
           <i class="el-icon-menu"></i>
           <span slot="title">APP</span>
         </el-menu-item>
-        <el-menu-item index="/timeline">
-          <i class="el-icon-menu"></i>
-          <span slot="title">时间线</span>
-        </el-menu-item>
-        <el-menu-item index="/hello2">
+        <el-menu-item index="/modulelist">
           <i class="el-icon-menu"></i>
           <span slot="title">模块列表</span>
         </el-menu-item>
-        <el-menu-item index="/hello3">
+        <el-menu-item index="/module-manager">
           <i class="el-icon-menu"></i>
-          <span slot="title">依赖分析</span>
-        </el-menu-item>
-        <el-menu-item index="/hello4">
-          <i class="el-icon-menu"></i>
-          <span slot="title">模块详情</span>
+          <span slot="title">接入管理</span>
         </el-menu-item>
         <el-menu-item index="/hello5">
           <i class="el-icon-menu"></i>
@@ -29,10 +21,6 @@
         <el-menu-item index="/offpack">
           <i class="el-icon-menu"></i>
           <span slot="title">离线包</span>
-        </el-menu-item>
-        <el-menu-item index="/hello7" disabled>
-          <i class="el-icon-menu"></i>
-          <span slot="title">警告通知</span>
         </el-menu-item>
         <el-menu-item index="/help">
           <i class="el-icon-menu"></i>
@@ -87,7 +75,6 @@ export default {
   name: 'App',
   methods: {
     logIn () {
-      console.log('提交表单 ', this.loginForm)
       this.fullscreenLoading = true
       axios.post('/api/user/logIn', {
         userName: this.loginForm.userName,

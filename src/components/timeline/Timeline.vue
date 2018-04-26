@@ -26,7 +26,7 @@
 export default {
   name: 'Timeline',
   props: {
-    actionList: {
+    actionList: {// 传入的列表是已经排序的
       type: Array,
       default: function () {
         return []
@@ -45,7 +45,6 @@ export default {
     }
   },
   watch: {
-    // 如果 `question` 发生改变，这个函数就会运行
     actionList: function (newlist) {
       let actions = newlist.concat()
       if (this.showToday) {

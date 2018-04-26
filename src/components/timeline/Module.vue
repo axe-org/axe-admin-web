@@ -1,18 +1,18 @@
 <template>
-  <el-container class="body" v-loading="refreshLoading">
-    <el-main class="hmid">
+  <el-container v-loading="refreshLoading">
+    <el-main class="hmid scroll">
       <div>
         <div class="space-between">
           <el-button icon="el-icon-refresh" @click="loadTimelineInfo">刷新</el-button>
           <el-button v-if="canAddAction" icon="el-icon-plus" @click="addActionDialogVisable = true">新增</el-button>
         </div>
-        <timeline style="margin-top: 20px;" :actionList="timelineInfo.actionList" :showToday="appInProgress" @click="selectAction"/>
+        <timeline style="margin-top: 20px;" :actionList="actionList" :showToday="inProgress" @click="selectAction"/>
       </div>
     </el-main>
     <el-aside style="height: 100%;" width="240px">
       <div class="hmid">
         <el-form status-icon label-width="80px" style="width: 100%;" size="mini">
-          <el-form-item label="APP版本">
+          <!-- <el-form-item label="APP版本">
             <div>{{ appVersion }}</div>
           </el-form-item>
           <el-form-item label="创建时间">
@@ -20,10 +20,7 @@
           </el-form-item>
           <el-form-item label="当前状态">
             <div>{{ appState }}</div>
-          </el-form-item>
-          <el-form-item v-if="appInProgress" label="当前进度">
-            <div>{{ appProgress }}</div>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
         <el-form v-if="selectedAction" status-icon label-width="80px" style="width: 100%;">
           <el-form-item label="-事件详情-">
@@ -121,19 +118,26 @@ import axios from 'axios'
 import conf from '../../conf'
 import dateformat from 'dateformat'
 export default {
-  name: 'AppTimeline',
+  name: 'ModuleTimeline',
+  props: {
+    moduleLineId: Number,
+    moduleAdmin: Boolean
+    // appVersion: String
+  },
   data () {
     return {
-      lineId: '',
+      lineId: this.moduleLineId,
       refreshLoading: false,
-      appVersion: '',
-      versionCreatedTime: '',
-      appState: '',
-      appInProgress: false,
-      appProgress: '',
+      // appState: '',
+      inProgress: false,
+      moduleId: '',
       timelineInfo: {
 
       },
+      appTimelineInfo: {
+
+      },
+      actionList: [],
       selectedAction: undefined,
       addActionDialogVisable: false,
       addActionLoading: false,
@@ -185,23 +189,23 @@ export default {
   },
   computed: {
     canAddAction () {
-      return this.$store.state.appAdmin && this.timelineInfo && this.timelineInfo.timelineInfo &&
+      return this.moduleAdmin && this.timelineInfo && this.timelineInfo.timelineInfo &&
        this.timelineInfo.timelineInfo.status !== conf.TIMELINE_STATUS_DONE
     },
     actionFinished () {
-      return this.selectedAction && this.selectedAction.status === conf.TIMELINE_ACTION_STATUS_FINISHED
+      return this.selectedAction && this.selectedAction.right && this.selectedAction.status === conf.TIMELINE_ACTION_STATUS_FINISHED
     },
     canAddDesc () {
-      return this.$store.state.appAdmin && this.selectedAction &&
+      return this.moduleAdmin && this.selectedAction && this.selectedAction.right &&
        this.selectedAction.status !== conf.TIMELINE_ACTION_STATUS_FINISHED
     },
     canDelete () {
-      return this.$store.state.appAdmin && this.selectedAction &&
+      return this.moduleAdmin && this.selectedAction && this.selectedAction.right &&
        this.selectedAction.status !== conf.TIMELINE_ACTION_STATUS_FINISHED &&
         this.selectedAction.type === conf.TIMELINE_ACTION_TYPE_USERSET
     },
     canFinsh () {
-      return this.$store.state.appAdmin && this.selectedAction &&
+      return this.moduleAdmin && this.selectedAction && this.selectedAction.right &&
        this.selectedAction.status !== conf.TIMELINE_ACTION_STATUS_FINISHED &&
        this.firstUnfinshedActionId === this.selectedAction.actionId
     }
@@ -210,61 +214,85 @@ export default {
     loadTimelineInfo () {
       this.refreshLoading = true
       axios.post(`/api/timeline/info`, {
-        lineId: this.lineId
+        lineId: this.moduleLineId
       }).then(response => {
+        this.refreshLoading = false
         if (response.data.error) {
-          this.$message({
+          return this.$message({
             showClose: true,
             message: response.data.error,
             type: 'error',
             duration: 0
           })
-        } else {
-          this.selectedAction = undefined // 设置选中为空
-          this.appVersion = response.data.appVersionInfo.version
-          document.title = this.appVersion
-          this.versionCreatedTime = response.data.appVersionInfo.createdTime
-          let appStatusTypes = ['开发中', '未开始', '已完成']
-          this.appState = appStatusTypes[response.data.appVersionInfo.status]
-          if (response.data.appVersionInfo.status === conf.TIMELINE_STATUS_DOING) {
-            this.appInProgress = true
-          } else {
-            this.appInProgress = false
-          }
-          let finishedActionCount = 0
-          let recordUnfinishedAction = false
-          response.data.actionList.forEach(action => {
-            // 将时间格式化为 Date类型
-            action.expectedTimeString = action.expectedTime
-            action.expectedTime = new Date(action.expectedTime.replace(/-/g, '/'))
-            action.year = action.expectedTime.getFullYear()
-            action.date = (action.expectedTime.getMonth() + 1) + '/' + action.expectedTime.getDate()
-            if (action.status === conf.TIMELINE_ACTION_STATUS_FINISHED) {
-              action.finished = true
-              finishedActionCount++
-              // 已完成，则设置时间是完成时间
-              action.finishedTimeString = action.finishedTime
-              action.finishedTime = new Date(action.finishedTime.replace(/-/g, '/'))
-              // action.year = action.finishedTime.getFullYear()
-              // action.date = (action.finishedTime.getMonth() + 1) + '/' + action.finishedTime.getDate()
-            } else {
-              if (recordUnfinishedAction === false) {
-                this.firstUnfinshedActionId = action.actionId
-                recordUnfinishedAction = true
-              }
-              action.finished = false
-              action.finishedTimeString = ''
-            }
-            if (action.type !== conf.TIMELINE_ACTION_TYPE_USERSET) {
-              action.right = false
-            } else {
-              action.right = true
-            }
-            action.message = action.detail
-          })
-          this.appProgress = finishedActionCount + ' / ' + response.data.actionList.length
-          this.timelineInfo = response.data
         }
+        this.selectedAction = undefined // 设置选中为空
+        // this.versionCreatedTime = response.data.appVersionInfo.createdTime
+        // let appStatusTypes = ['开发中', '未开始', '已完成']
+        // this.appState = appStatusTypes[response.data.appVersionInfo.status]
+        if (response.data.moduleVersionInfo.status === conf.TIMELINE_STATUS_DOING) {
+          this.inProgress = true
+        } else {
+          this.inProgress = false
+        }
+        // let finishedActionCount = 0
+        let recordUnfinishedAction = false
+        let actionList = []
+        response.data.actionList.forEach(action => {
+          // 将时间格式化为 Date类型
+          action.expectedTimeString = action.expectedTime
+          action.expectedTime = new Date(action.expectedTime.replace(/-/g, '/'))
+          action.year = action.expectedTime.getFullYear()
+          action.date = (action.expectedTime.getMonth() + 1) + '/' + action.expectedTime.getDate()
+          if (action.status === conf.TIMELINE_ACTION_STATUS_FINISHED) {
+            action.finished = true
+            // finishedActionCount++
+            // 已完成，则设置时间是完成时间
+            action.finishedTimeString = action.finishedTime
+            action.finishedTime = new Date(action.finishedTime.replace(/-/g, '/'))
+          } else {
+            if (recordUnfinishedAction === false) {
+              this.firstUnfinshedActionId = action.actionId
+              recordUnfinishedAction = true
+            }
+            action.finished = false
+            action.finishedTimeString = ''
+          }
+          // 这里， 所有模块的事件放在右边
+          action.right = true
+          action.message = action.detail
+          actionList.push(action)
+        })
+        // 同时显示app事件，只显示标准事件，放左边。
+        response.data.appTimelineInfo.actionList.forEach(action => {
+          // 将时间格式化为 Date类型
+          action.expectedTimeString = action.expectedTime
+          action.expectedTime = new Date(action.expectedTime.replace(/-/g, '/'))
+          action.year = action.expectedTime.getFullYear()
+          action.date = (action.expectedTime.getMonth() + 1) + '/' + action.expectedTime.getDate()
+          if (action.status === conf.TIMELINE_ACTION_STATUS_FINISHED) {
+            action.finished = true
+            // 已完成，则设置时间是完成时间
+            action.finishedTimeString = action.finishedTime
+            action.finishedTime = new Date(action.finishedTime.replace(/-/g, '/'))
+          } else {
+            action.finished = false
+            action.finishedTimeString = ''
+          }
+          // APP 事件放左边
+          action.right = false
+          action.message = action.detail
+          if (action.type !== conf.TIMELINE_ACTION_TYPE_USERSET) {
+            actionList.push(action)
+          }
+        })
+        actionList.sort((a, b) => {
+          return a.expectedTime > b.expectedTime
+        })
+        this.actionList = actionList
+        // this.appProgress = finishedActionCount + ' / ' + response.data.actionList.length
+        this.appTimelineInfo = response.data.appTimelineInfo
+        this.timelineInfo = response.data
+        this.moduleId = response.data.moduleVersionInfo.moduleId
         this.refreshLoading = false
       }).catch(err => {
         this.$message({
@@ -315,7 +343,8 @@ export default {
             lineId: this.lineId,
             expectedTime: this.addActionForm.time,
             title: this.addActionForm.title,
-            detail: format
+            detail: format,
+            moduleId: this.moduleId
           }).then((response) => {
             this.addActionLoading = false
             if (response.data.error) {
@@ -363,7 +392,8 @@ export default {
           axios.post('/api/timeline/addDetail', {
             lineId: this.lineId,
             actionId: this.selectedAction.actionId,
-            detail: format
+            detail: format,
+            moduleId: this.moduleId
           }).then((response) => {
             this.addDescLoading = false
             if (response.data.error) {
@@ -403,7 +433,8 @@ export default {
       // 提交时，将换行符进行转换。
       axios.post('/api/timeline/delete', {
         lineId: this.lineId,
-        actionId: this.selectedAction.actionId
+        actionId: this.selectedAction.actionId,
+        moduleId: this.moduleId
       }).then((response) => {
         this.deleteActionLoading = false
         if (response.data.error) {
@@ -452,7 +483,8 @@ export default {
           axios.post('/api/timeline/finish', {
             lineId: this.lineId,
             actionId: this.selectedAction.actionId,
-            detail: format
+            detail: format,
+            moduleId: this.moduleId
           }).then((response) => {
             this.finishActionLoading = false
             if (response.data.error) {
@@ -474,6 +506,9 @@ export default {
               }
               // 同时，刷新当前页面信息。
               this.loadTimelineInfo()
+              // 对于完成事件， 发送通知，以通知外部刷新界面
+              console.log('refresh')
+              this.$emit('refresh')
             }
           }).catch(err => {
             this.$message({
@@ -488,23 +523,18 @@ export default {
       })
     }
   },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      vm.lineId = to.params.lineId
-      vm.loadTimelineInfo()
-    })
-  },
-  beforeRouteUpdate (to, from, next) {
-    next()
-    this.lineId = to.params.lineId
+  mounted () {
+    // 初始化以及加载数据
     this.loadTimelineInfo()
   }
 }
 </script>
 
 <style scoped>
-  .body {
-    height: 100%;
+  .scroll {
+    height: calc(100vh - 90px);
+    box-sizing: border-box;
+    overflow: auto;
   }
   .desc {
     margin-top: 9px;

@@ -91,7 +91,7 @@
             <el-button type="primary" @click="resetUserPassword">确 定</el-button>
           </div>
         </el-dialog>
-        <el-dialog title="设置管理权限" :visible.sync="adminSetDialogVisible" center width='400px'>
+        <el-dialog title="设置管理权限" :visible.sync="adminSetDialogVisible" center width="400px">
           <el-form :model="adminForm" label-width="100px" v-loading="setAdminloading">
             <el-form-item label="用户管理权限">
               <el-switch v-model="adminForm.userAdmin" active-text="有" inactive-text="无"/>
@@ -106,7 +106,7 @@
           </div>
         </el-dialog>
       </div>
-      <el-form v-else status-icon label-width="100px">
+      <el-form v-else label-width="100px">
         <el-form-item label="用户名">
           <div>{{ userName }}</div>
         </el-form-item>
@@ -199,7 +199,6 @@ export default {
   },
   methods: {
     submitForm () {
-      console.log('提交表单 ', this.loginForm)
       this.fullscreenLoading = true
       axios.post('/api/user/logIn', {
         userName: this.loginForm.userName,
@@ -207,14 +206,13 @@ export default {
       }).then((response) => {
         this.fullscreenLoading = false
         if (response.data.error) {
-          console.log(response.data.error)
           this.$message.error('登录失败， 后台报错 ： ' + response.data.error)
         } else {
           // 登录成功
           this.$store.commit(LOGIN_MUTATION, response.data)
         }
       }).catch((error) => {
-        console.log(error.message)
+        this.$message.error(error.message)
         this.fullscreenLoading = false
       })
     },
@@ -257,7 +255,7 @@ export default {
       this.showUserSettingView = false
     },
     jumpToModule (moduleName) {
-      console.log(moduleName)
+
     },
     loadPage (pageNum) {
       this.currentPage = pageNum
@@ -275,7 +273,6 @@ export default {
         this.$message.error(err.message)
         this.pageLoading = false
       })
-      // console.log(`当前页: ${pageNum}`)
     },
     showResetPasswordDialog (userId) {
       this.selectUserId = userId
@@ -310,7 +307,6 @@ export default {
     addUser () {
       this.$refs['addUserForm'].validate((valid) => {
         if (valid) {
-          console.log(this.addUserForm)
           let addUser = Object.assign({}, this.addUserForm)
           addUser.password = md5(addUser.password)
           this.addUserLoading = true
@@ -336,7 +332,6 @@ export default {
       })
     },
     showAdminSettingDialog (userInfo) {
-      console.log(userInfo)
       this.selectUserId = userInfo.userId
       this.adminForm = {
         appAdmin: !!userInfo.appAdmin,
@@ -376,7 +371,6 @@ export default {
         .then((response) => {
           vm.fullscreenLoading = false
           if (response.data.error) {
-            console.log(response.data)
             vm.$store.commit(LOGOUT_MUTATION)
           } else {
             // 登录成功
@@ -384,7 +378,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error.message)
+          this.$message.error(error.message)
           vm.fullscreenLoading = false
         })
     })
