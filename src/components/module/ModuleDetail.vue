@@ -10,8 +10,8 @@
       <module-timeline v-if="initialLoaded" :module-line-id="moduleVersionInfo.timelineId" :module-admin="moduleAdmin" @refresh="loadVersionInfo"/>
     </el-tab-pane>
     <el-tab-pane label="依赖情况" name="dependency">
-      <div class="scroll-main-view" style="margin-top: 20px;display: flex;justify-content:center;aligin-items: center;">
-        <img v-if="initialLoaded" :src="dependencyImage" style="CURSOR: hand" @click="openDenpencyImage">
+      <div v-if="initialLoaded && dependencyImage !== ''" class="scroll-main-view" style="margin-top: 20px;display: flex;justify-content:center;aligin-items: center;">
+        <img :src="dependencyImage" style="CURSOR: hand" @click="openDenpencyImage">
       </div>
     </el-tab-pane>
     <el-tab-pane label="管理" name="manager" v-if="moduleAdmin">
@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     openDenpencyImage () {
-      if (this.dependencyImage) {
+      if (this.dependencyImage !== '') {
         window.open(this.dependencyImage)
       }
     },
@@ -115,19 +115,21 @@ export default {
         overview['homeURL'] = this.moduleInfo.homeURL
         overview['versionId'] = this.moduleVersionInfo.versionId
         overview['moduleId'] = this.moduleInfo.moduleId
-        let status = '未开始'
+        overview['status'] = this.moduleVersionInfo.status
+        let statusInfo = '未开始'
         if (this.moduleVersionInfo.status === conf.TIMELINE_STATUS_DOING) {
           if (this.moduleVersionInfo.released) {
-            status = '已发布生产版本'
+            statusInfo = '已发布生产版本'
           } else if (this.moduleVersionInfo.imported) {
-            status = '已接入APP版本'
+            statusInfo = '已接入APP版本'
           } else {
-            status = '开发中'
+            statusInfo = '开发中'
           }
         } else if (this.moduleVersionInfo.status === conf.TIMELINE_STATUS_DONE) {
-          status = '已完成'
+          statusInfo = '已完成'
         }
-        overview['status'] = status
+        overview['statusInfo'] = statusInfo
+
         overview['changeLog'] = this.moduleVersionInfo.changeLog
         overview['currentVersion'] = this.moduleVersionInfo.currentVersion
         overview['appVersion'] = this.appVersionInfo.version
@@ -147,12 +149,16 @@ export default {
         info['buildCount'] = this.moduleVersionInfo.buildCount
         info['moduleId'] = this.moduleInfo.moduleId
         info['versionId'] = this.moduleVersionInfo.versionId
-        this.dependencyImage = `/api/static/module/${this.moduleVersionInfo.versionId}/dependency.svg`
         this.versionManagerInfo = info
         console.log(info)
         this.initialLoaded = true
+        let dependencyImage = `/api/static/module/${this.moduleVersionInfo.versionId}/dependency.svg`
+        axios.head(dependencyImage).then(() => {
+          this.dependencyImage = dependencyImage
+        }).catch(err => {
+          console.log(err)
+        })
         axios.get(`/api/static/module/${this.moduleVersionInfo.versionId}/API.h`).then(res => {
-          console.log(res.data)
           // 设置markdown 代码格式，即每行开头添加一个tab
           let rowContent = '    ' + res.data
           this.APIContent = rowContent.replace(/\n/g, '\n    ')

@@ -10,7 +10,7 @@
           <i class="el-icon-menu"></i>
           <span slot="title">模块列表</span>
         </el-menu-item>
-        <el-menu-item index="/module-manager">
+        <el-menu-item index="/import">
           <i class="el-icon-menu"></i>
           <span slot="title">接入管理</span>
         </el-menu-item>
@@ -33,9 +33,10 @@
       </el-menu>
     </el-aside>
     <el-main>
-      <keep-alive v-if="login">
-        <router-view/>
+      <keep-alive>
+        <router-view v-if="login && !$route.meta.keepFresh"/>
       </keep-alive>
+      <router-view v-if="login && $route.meta.keepFresh"/>
     </el-main>
     <div v-if="!login" class="top-float">
       <el-form :model="loginForm" status-icon ref="loginForm" label-width="100px">

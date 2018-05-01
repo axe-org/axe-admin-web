@@ -122,7 +122,8 @@ export default {
     },
     addVersionSuccess () {
       this.pageNum = 1
-      this.loadModuleInfo()
+      this.pageCount = 1
+      this.loadModuleVersions()
     },
     loadModuleVersions (pageNum) {
       this.moduleVersionsLoading = true

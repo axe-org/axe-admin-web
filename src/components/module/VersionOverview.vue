@@ -19,7 +19,7 @@
           <div>{{ overview.appVersion }}</div>
         </el-form-item>
         <el-form-item label="开发状态">
-          <div>{{ overview.status }}</div>
+          <div>{{ overview.statusInfo }}</div>
         </el-form-item>
         <el-form-item label="最新版本号">
           <div>{{ overview.currentVersion }}</div>
@@ -31,7 +31,7 @@
       <div class="logbtn">
         <el-button v-if="moduleAdmin && modifying" @click="cancelChangeLog">取消</el-button>
         <el-button v-if="moduleAdmin && modifying" type="primary" @click="submitChangeLog">提交修改</el-button>
-        <el-button v-if="moduleAdmin && !modifying" type="primary" size="small" @click="modifyChangeLog">修改</el-button>
+        <el-button v-if="canModify" type="primary" size="small" @click="modifyChangeLog">修改</el-button>
       </div>
       <div class="changelog">
         <markdown :content="content"/>
@@ -42,6 +42,7 @@
 <script>
 import axios from 'axios'
 import Markdown from '../Markdown'
+import conf from '../../conf'
 export default {
   name: 'ModuleOverview',
   components: {
@@ -58,6 +59,11 @@ export default {
   props: {
     overview: Object,
     moduleAdmin: Boolean
+  },
+  computed: {
+    canModify () {
+      return this.moduleAdmin && !this.modifying && this.overview.status !== conf.TIMELINE_STATUS_DONE
+    }
   },
   methods: {
     modifyChangeLog () {

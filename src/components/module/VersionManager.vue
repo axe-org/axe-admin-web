@@ -67,14 +67,18 @@
         </div>
       </el-dialog>
       <el-button v-if="canBuild" style="margin-top: 15px;width: 220px;" type="primary" @click="showBuildDialog" v-loading.fullscreen.lock="fullscreenLoading">构建</el-button>
-      <el-dialog title="删除版本" :visible.sync="deleteDialogVisable" center width='500px' v-loading="deleteActionLoading">
-        <div style="font-size: 20px;color: red;">确认当前模块 "{{ info.version }}" 版本 ？ 删除一些未开始的版本 或者需要取消的版本。 </div>
+      <el-dialog v-loading="importConfirmLoading" title="接入版本" :visible.sync="importConfirmDialogVisible" center width='500px' >
+        <div>
+          <div>将当前开发模块接入到APP版本中，以进行下一步的测试与开发。 一定要注意，模块要基本完成自测，不要影响测试APP的稳定性。如果多模块并行开发时，要确认依赖模块已经接入到APP！！！ 如果有需要提醒 APP管理组内容，请在下方备注处简要注明： </div>
+          <br>
+          <el-input type="textarea" :rows="2" placeholder="如有需要备注说明，请简要概述，不超过50字。" v-model="importNote" :maxlength="50"/>
+        </div>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="deleteDialogVisable = false">取消</el-button>
-          <el-button type="danger" @click="deleteAction">删除</el-button>
+          <el-button @click="importConfirmDialogVisible = false">取消</el-button>
+          <el-button type="danger" @click="applyImport">确认</el-button>
         </div>
       </el-dialog>
-      <el-button v-if="canImport" style="margin-top: 15px;width: 220px;" type="primary">接入APP</el-button>
+      <el-button v-if="canImport" style="margin-top: 15px;width: 220px;" type="primary" @click="importConfirmDialogVisible = true">接入APP</el-button>
       <el-dialog title="删除版本" :visible.sync="deleteDialogVisable" center width='500px' v-loading="deleteActionLoading">
         <div style="font-size: 20px;color: red;">确认当前模块 "{{ info.version }}" 版本 ？ 删除一些未开始的版本 或者需要取消的版本。 </div>
         <div slot="footer" class="dialog-footer">
@@ -115,7 +119,10 @@ export default {
       buildStatusText: '',
       buildDuration: '', // 记录构建耗时
       buildFinished: false, // 完成构建时， 隐藏构建按钮
-      startBuilding: false // 开始构建，暂时进度。
+      startBuilding: false, // 开始构建，暂时进度。
+      importConfirmDialogVisible: false,
+      importConfirmLoading: false,
+      importNote: ''
     }
   },
   methods: {
@@ -169,12 +176,12 @@ export default {
         }
         // 构建调用成功.
         this.buildInfo = res.data
-        let duration = 0
+        let startTime = new Date(this.buildInfo.startedTime)
         let timer = setInterval(() => {
           if (this.buildFinished) {
             clearInterval(timer)
           }
-          duration++
+          let duration = parseInt(new Date().getTime() / 1000 - startTime.getTime() / 1000)
           let min = parseInt(duration / 60)
           let txt = ''
           if (min) {
@@ -183,7 +190,6 @@ export default {
           txt += duration % 60 + ' 秒'
           this.buildDuration = txt
         }, 1000)
-        let startTime = new Date(this.buildInfo.startedTime)
         let estimatedDuration = parseInt(this.buildInfo.estimatedDuration / 60 / 1000)
         this.buildStatusText = `构建中，开始于${startTime.getHours()}:${startTime.getMinutes()} , 预计耗时 ${estimatedDuration} 分钟。`
         this.startBuilding = true
@@ -197,6 +203,39 @@ export default {
     },
     jumpToJenkinsBuild () {
 
+    },
+    applyImport () {
+      // 提交模块接入申请。
+      this.importConfirmLoading = true
+      axios.post('/api/import/apply', {
+        moduleId: this.info.moduleId,
+        moduleVersionId: this.info.versionId,
+        note: this.importNote
+      }).then(res => {
+        this.importConfirmLoading = false
+        if (res.data.error) {
+          return this.$message({
+            showClose: true,
+            type: 'error',
+            message: res.data.error,
+            duration: 0
+          })
+        }
+        this.$message({
+          type: 'success',
+          message: '接入提交成功， 等待管理员审核。'
+        })
+        this.importConfirmDialogVisible = false
+        this.importNote = ''
+      }).catch(err => {
+        this.importConfirmLoading = false
+        this.$message({
+          showClose: true,
+          duration: 0,
+          type: 'error',
+          message: err.message
+        })
+      })
     },
     watchJenkinsBuild () {
       axios.get(`/api/jenkins/build?buildId=${this.buildInfo.buildId}`).then(res => {

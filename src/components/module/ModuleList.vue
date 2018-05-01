@@ -100,7 +100,7 @@ export default {
       searchName: '',
       moduleList: [],
       listLoading: false,
-      pageCount: 0,
+      pageCount: 1,
       pageNum: 1,
       addModuleDialogVisible: false,
       addModuleInfo: {
@@ -180,7 +180,8 @@ export default {
             message: '创建成功， 跳转到该模块页面',
             type: 'success'
           })
-          console.log('module ID : ' + res.data.moduleId)
+          this.addModuleDialogVisible = false
+          this.$router.push(`/module-overview/${res.data.moduleId}`)
         }).catch(err => {
           this.addModuleLoading = false
           this.$message({
