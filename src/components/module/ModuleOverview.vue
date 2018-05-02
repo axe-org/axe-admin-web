@@ -1,33 +1,33 @@
 <template>
   <div class="container">
     <div class="left hmid" v-loading="moduleInfoLoading">
-      <el-form label-width="120px" style="width:300px">
+      <el-form label-width="120px" style="width:100%; align-self:flex-start;">
         <el-form-item label="模块名">
           <div>{{ moduleInfo.name }}</div>
         </el-form-item>
-        <el-form-item label="类型">
+        <el-form-item label="类型" style="margin-top: -17px;">
           <div>{{ moduleInfo.type }}</div>
         </el-form-item>
-        <el-form-item label="负责人">
-          <div>{{ moduleInfo.userList.join(',') }}</div>
+        <el-form-item label="负责人" style="margin-top: -17px;">
+          <div>{{ moduleInfo.userList.join(' , ') }}</div>
         </el-form-item>
-        <el-form-item label="Jenkins任务">
-          <div>{{ moduleInfo.jenkinsJob }}</div>
+        <el-form-item label="Jenkins任务" style="margin-top: -17px;">
+          <a :href="jenkinsURL" target="_blank">{{ moduleInfo.jenkinsJob }}</a>
         </el-form-item>
-        <el-form-item label="仓库地址">
-          <div>{{ moduleInfo.homeURL }}</div>
+        <el-form-item label="仓库地址" style="margin-top: -17px;">
+          <a :href="moduleInfo.homeURL" target="_blank">{{  moduleInfo.homeURL }}</a>
         </el-form-item>
-        <el-form-item label="仓库类型">
+        <el-form-item label="仓库类型" style="margin-top: -17px;">
           <div>{{ moduleInfo.gitType }}</div>
         </el-form-item>
-        <el-form-item label="版本数量">
+        <el-form-item label="版本数量" style="margin-top: -17px;">
           <div>{{ moduleInfo.versionCount }}</div>
         </el-form-item>
-        <el-form-item label="最新prd版本">
+        <el-form-item label="最新prd版本" style="margin-top: -17px;">
           <div>{{ moduleInfo.maxPrdVersion }}</div>
         </el-form-item>
-        <el-form-item label="开发中版本">
-          <div>{{ moduleInfo.onGoingList.join(',') }}</div>
+        <el-form-item label="开发中版本" style="margin-top: -17px;">
+          <div>{{ moduleInfo.onGoingList.join(' , ') }}</div>
         </el-form-item>
       </el-form>
       <el-dialog title="用户管理" :visible.sync="moduleAdminDialogVisible" center width="550px" v-loading="moduleAdminLoading">
@@ -53,12 +53,11 @@
         <el-table-column label="查看详情">
           <template slot-scope="scope">
             <router-link target="_blank" :to="`/module/${$route.params.moduleId}/version/${scope.row.version}`" class="el-button el-button--default el-button--small">查看详情</router-link>
-            <!-- <el-button size="small" @click="$alert('跳转')">查看详情</el-button> -->
           </template>
         </el-table-column>
       </el-table>
       <div class="hmid">
-        <el-pagination layout="prev, pager, next" :total="pageCount" :current-page.sync="pageNum" @current-change="loadModuleVersions"/>
+        <el-pagination layout="prev, pager, next" :page-count="pageCount" :current-page.sync="pageNum" @current-change="loadModuleVersions"/>
       </div>
     </div>
   </div>
@@ -66,6 +65,7 @@
 <script>
 import NewVersionForm from './NewVersionForm'
 import axios from 'axios'
+import config from '../../conf/config'
 export default {
   name: 'ModuleOverview',
   components: {
@@ -93,6 +93,11 @@ export default {
       versionList: [],
       pageCount: 1,
       pageNum: 1
+    }
+  },
+  computed: {
+    jenkinsURL () {
+      return config.jenkinsURL + '/job/' + this.moduleInfo.jenkinsJob
     }
   },
   methods: {

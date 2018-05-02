@@ -5,22 +5,19 @@
         <div>{{ info.version }}</div>
       </el-form-item>
       <el-form-item label="接入APP版本">
-        <div>{{ info.appVersion }}</div>
-      </el-form-item>
-      <el-form-item label="当前状态">
-        <div>{{ info.status }}</div>
+        <router-link :to="'/app/version/' + info.appVersion">{{ info.appVersion }}</router-link>
       </el-form-item>
       <el-form-item label="Jenkins任务">
-        <div>{{ info.jenkinsJob }}</div>
+        <a :href="jobURL" target="_blank">{{ info.jenkinsJob }}</a>
       </el-form-item>
       <el-form-item label="最新版本号">
         <div>{{ info.currentVersion }}</div>
       </el-form-item>
-      <el-form-item label="已接入APP">
-        <div>{{ info.imported }}</div>
+      <el-form-item label="接入状态">
+        <div>{{ info.imported ? '已接入APP' : '未提交' }}</div>
       </el-form-item>
-      <el-form-item label="已打prd版本">
-        <div>{{ info.released }}</div>
+      <el-form-item label="发布状态">
+        <div>{{ info.released ? '已打PRD版本' : 'Beta版本阶段' }}</div>
       </el-form-item>
       <el-form-item label="成功构建次数">
         <div>{{ info.buildSuccess }}</div>
@@ -51,14 +48,17 @@
               <el-radio :label="false" :disabled="startBuilding">测试构建</el-radio>
             </el-radio-group>
           </el-form-item>
+          <el-form-item label="jenkins地址">
+            <a :href="jobURL" target="_blank">{{ info.jenkinsJob }}</a>
+          </el-form-item>
           <el-form-item v-if="startBuilding" label="构建状态">
             <div>{{buildStatusText}}</div>
           </el-form-item>
           <el-form-item v-if="startBuilding" label="构建耗时">
             <div>{{ buildDuration }}</div>
           </el-form-item>
-          <el-form-item v-if="startBuilding" label="查看Jenkins">
-            <el-button type="small" @click="jumpToJenkinsBuild">跳转到Jenkins</el-button>
+          <el-form-item v-if="startBuilding" label="构建日志">
+            <a :href="buildConsoleURL" target="_blank">查看构建日志详情</a>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -93,6 +93,7 @@
 <script>
 import axios from 'axios'
 import conf from '../../conf'
+import config from '../../conf/config'
 export default {
   name: 'ModuleVersionManager',
   props: {
@@ -190,6 +191,7 @@ export default {
           txt += duration % 60 + ' 秒'
           this.buildDuration = txt
         }, 1000)
+        this.buildConsoleURL = this.jobURL + '/' + this.buildInfo.buildNumber + '/console'
         let estimatedDuration = parseInt(this.buildInfo.estimatedDuration / 60 / 1000)
         this.buildStatusText = `构建中，开始于${startTime.getHours()}:${startTime.getMinutes()} , 预计耗时 ${estimatedDuration} 分钟。`
         this.startBuilding = true
@@ -200,9 +202,6 @@ export default {
         this.submitBuildLoading = false
         this.$alert('构建jenkins任务时，发生异常， 报错内容 : \n' + err.message + '\n 请稍后重试！！！')
       })
-    },
-    jumpToJenkinsBuild () {
-
     },
     applyImport () {
       // 提交模块接入申请。
@@ -265,6 +264,10 @@ export default {
             })
             this.info.currentVersion = this.buildInfo.newVersion
             this.info.buildSuccess++
+            if (this.buildParams.released) {
+              // 设置已经released
+              this.info.released = 1
+            }
           } else {
             this.info.buildFailed++
             this.buildStatusText = `构建失败， 当前状态${status} , 请检测Jenkins构建情况！！`
@@ -314,7 +317,7 @@ export default {
   },
   computed: {
     canBuild () {
-      return this.info.status === conf.TIMELINE_STATUS_DOING
+      return this.info.status === conf.TIMELINE_STATUS_DOING && !this.info.released
     },
     canImport () {
       return this.info.status === conf.TIMELINE_STATUS_DOING && !this.info.imported && this.info.buildSuccess
@@ -324,6 +327,9 @@ export default {
     },
     jenkinsBuilding () {
       return this.buildInfo.status === conf.JENKINS_JOB_BUILD_STATUS_BUILDING
+    },
+    jobURL () {
+      return config.jenkinsURL + '/job/' + this.info.jenkinsJob
     }
   }
 }

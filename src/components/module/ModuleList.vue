@@ -2,9 +2,9 @@
   <div class="container">
     <div class="option">
       <div class="option-left">
-        <el-checkbox v-model="selectMine" label="只看我的" border></el-checkbox>
+        <el-checkbox v-model="selectMine" label="只看我的" border @change="reloadModuleList"></el-checkbox>
         <span class="label">类型:</span>
-        <el-radio-group v-model="selectedType" size="medium">
+        <el-radio-group v-model="selectedType" size="medium" @change="reloadModuleList">
           <el-radio-button label="全部"></el-radio-button>
           <el-radio-button label="iOS"></el-radio-button>
           <el-radio-button label="html"></el-radio-button>
@@ -13,7 +13,7 @@
       </div>
       <div class="option-right">
         <el-button type="primary" icon="el-icon-plus" @click="addModuleDialogVisible = true">添加</el-button>
-        <el-input placeholder="模块名" v-model="searchName" style="margin-left: 20px;width: 200px;">
+        <el-input placeholder="模块名" v-model="searchName" style="margin-left: 20px;width: 200px;" clearable @keyup.enter.native="loadModuleList">
           <el-button slot="append" icon="el-icon-search" @click="loadModuleList"></el-button>
         </el-input>
       </div>
@@ -25,14 +25,14 @@
         </template>
       </el-table-column>
       <el-table-column label="类型" prop="type"/>
-      <el-table-column label="负责人">
+      <el-table-column label="负责人" min-width="200px" style="white-space:nowrap;overflow:hidden;text-overflow: ellipsis;">
         <template slot-scope="scope">
           {{ scope.row.userList.join(',')}}
         </template>
       </el-table-column>
       <el-table-column label="Jenkins任务">
         <template slot-scope="scope">
-          <a :href="scope.row.jenkinsURL" target="_blank">{{ scope.row.jenkinsJob }}</a>
+          <a :href="jenkinsJobBaseURL + scope.row.jenkinsJob" target="_blank">{{ scope.row.jenkinsJob }}</a>
         </template>
       </el-table-column>
       <el-table-column label="仓库地址">
@@ -43,22 +43,22 @@
       <el-table-column label="版本数量" prop="versionCount"/>
       <el-table-column label="最新prd版本">
         <template slot-scope="scope">
-          <router-link to="todo" v-if="scope.row.maxPrdVersion">{{ scope.row.maxPrdVersion }}</router-link>
+          <router-link v-if="scope.row.maxPrdVersion" :to="`/module/${scope.row.moduleId}/version/${scope.row.maxPrdVersion}`">{{ scope.row.maxPrdVersion }}</router-link>
         </template>
       </el-table-column>
-      <el-table-column label="开发中版本">
+      <el-table-column label="开发中版本" min-width="120px">
         <template slot-scope="scope">
-          <router-link to="todo" v-for="item in scope.row.onGoingList" :key="item.version">{{item.version}}</router-link>
+          <router-link style="margin-right:3px;" v-for="item in scope.row.onGoingList" :key="item" :to="`/module/${scope.row.moduleId}/version/${item}`">{{item}}</router-link>
         </template>
       </el-table-column>
     </el-table>
     <div class="hmid">
-      <el-pagination layout="prev, pager, next" :total="pageCount" :current-page.sync="pageNum" @current-change="loadModuleList"/>
+      <el-pagination layout="prev, pager, next" :page-count="pageCount" :current-page.sync="pageNum" @current-change="loadModuleList"/>
     </div>
     <el-dialog title="添加模块" :visible.sync="addModuleDialogVisible" center width="500px" v-loading="addModuleLoading">
       <el-form :model="addModuleInfo" ref="addModuleFrom" :rules="rules" label-width="120px">
         <el-form-item label="模块名" prop="name">
-          <el-input v-model="addModuleInfo.name" :maxlength="30" style="width: 250px"/>
+          <el-input v-model="addModuleInfo.name" :maxlength="30" autofocus style="width: 250px"/>
         </el-form-item>
         <el-form-item label="类型">
           <el-radio-group v-model="addModuleInfo.type" size="small">
@@ -90,6 +90,7 @@
 
 <script>
 import axios from 'axios'
+import config from '../../conf/config'
 // import conf from '../../conf'
 export default {
   name: 'ModuleList',
@@ -124,11 +125,17 @@ export default {
           {min: 10, max: 100, pattern: /^https?:\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]$/, message: '请输入准确的地址！！'}
         ]
       },
-      addModuleLoading: false
+      addModuleLoading: false,
+      jenkinsJobBaseURL: config.jenkinsURL + '/job/'
     }
   },
   methods: {
-    loadModuleList (pageNum) {
+    reloadModuleList () {
+      this.pageCount = 1
+      this.pageNum = 1
+      this.loadModuleList()
+    },
+    loadModuleList () {
       this.listLoading = true
       let form = {pageNum: this.pageNum}
       if (this.selectedType !== '全部') {
@@ -180,8 +187,11 @@ export default {
             message: '创建成功， 跳转到该模块页面',
             type: 'success'
           })
+          this.reloadModuleList()
           this.addModuleDialogVisible = false
-          this.$router.push(`/module-overview/${res.data.moduleId}`)
+          setTimeout(() => {
+            this.$router.push(`/module-overview/${res.data.moduleId}`)
+          }, 200)
         }).catch(err => {
           this.addModuleLoading = false
           this.$message({

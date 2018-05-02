@@ -4,7 +4,7 @@
       <el-menu :default-active="activeRoute" style="height: 100%;" background-color="#545c64" :router="true" text-color="#fff" active-text-color="#ffd04b">
         <el-menu-item index="/app">
           <i class="el-icon-menu"></i>
-          <span slot="title">APP</span>
+          <span slot="title">{{ appName }}</span>
         </el-menu-item>
         <el-menu-item index="/modulelist">
           <i class="el-icon-menu"></i>
@@ -14,7 +14,7 @@
           <i class="el-icon-menu"></i>
           <span slot="title">接入管理</span>
         </el-menu-item>
-        <el-menu-item index="/hello5">
+        <el-menu-item index="/dynamic-router">
           <i class="el-icon-menu"></i>
           <span slot="title">动态路由</span>
         </el-menu-item>
@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import config from './conf/config'
 import { mapState } from 'vuex'
 import {LOGIN_MUTATION, LOGOUT_MUTATION} from './store/mutation-types'
 import md5 from 'md5'
@@ -67,7 +68,8 @@ export default {
       loginForm: {
         userName: '',
         password: ''
-      }
+      },
+      appName: config.appName
     }
   },
   computed: {

@@ -11,7 +11,7 @@
     </el-tab-pane>
     <el-tab-pane label="依赖情况" name="dependency">
       <div v-if="initialLoaded && dependencyImage !== ''" class="scroll-main-view" style="margin-top: 20px;display: flex;justify-content:center;aligin-items: center;">
-        <img :src="dependencyImage" style="CURSOR: hand" @click="openDenpencyImage">
+        <img :src="dependencyImage" @click="openDenpencyImage">
       </div>
     </el-tab-pane>
     <el-tab-pane label="管理" name="manager" v-if="moduleAdmin">
@@ -112,6 +112,7 @@ export default {
         overview['name'] = this.moduleInfo.name
         overview['type'] = this.moduleInfo.type
         overview['jenkinsJob'] = this.moduleInfo.jenkinsJob
+        overview['gitType'] = this.moduleInfo.gitType
         overview['homeURL'] = this.moduleInfo.homeURL
         overview['versionId'] = this.moduleVersionInfo.versionId
         overview['moduleId'] = this.moduleInfo.moduleId

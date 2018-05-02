@@ -2,10 +2,10 @@
   <div class="container hmid" v-loading="loading">
     <div class="option">
       <div class="left">
-        <div style="width: 160px;">APP版本</div>
-        <el-input v-model="appVersion" placeholder="指定具体版本"/>
-        <div style="width: 100px;">模块</div>
-        <el-input v-model="moduleName" placeholder="指定具体模块"/>
+        <div style="width: 180px;">APP版本 : </div>
+        <el-input v-model="appVersion" placeholder="指定具体版本" clearable @keyup.enter.native="loadImportRecords"/>
+        <div style="width: 110px; margin-left: 10px;">模块 : </div>
+        <el-input v-model="moduleName" placeholder="指定具体模块" clearable @keyup.enter.native="loadImportRecords"/>
       </div>
       <el-button type="primary" @click="loadImportRecords" icon="el-icon-refresh">刷新</el-button>
     </div>
@@ -20,10 +20,11 @@
       <el-table-column label="提起人" prop="applicant"/>
       <el-table-column label="提起时间" prop="applyTime"/>
       <el-table-column label="备注说明" prop="note"/>
-      <el-table-column label="当前状态" prop="status"/>
+      <el-table-column label="当前状态" prop="statusText"/>
+      <el-table-column label="处理人" prop="handleUser"/>
       <el-table-column label="操作时间" prop="handleTime"/>
     </el-table>
-    <el-pagination layout="prev,pager,next" :total="pageCount" :current-page.sync="pageNum" @current-change="loadImportRecords"/>
+    <el-pagination layout="prev,pager,next" :page-count="pageCount" :current-page.sync="pageNum" @current-change="loadImportRecords"/>
   </div>
 </template>
 <script>
@@ -71,8 +72,13 @@ export default {
             duration: 0
           })
         }
+        let list = res.data.importList
+        let statusList = ['等待处理', '接入失败', '接入成功', '拒绝接入']
+        list.forEach(item => {
+          item['statusText'] = statusList[item.status]
+        })
         this.pageCount = parseInt(res.data.pageCount)
-        this.importList = res.data.importList
+        this.importList = list
       }).catch(err => {
         this.loading = false
         this.$message({

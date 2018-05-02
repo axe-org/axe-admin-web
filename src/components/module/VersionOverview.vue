@@ -10,13 +10,13 @@
           <div>{{ overview.type }}</div>
         </el-form-item>
         <el-form-item label="Jenkins任务">
-          <div>{{ overview.jenkinsJob }}</div>
+          <a :href="jenkinsURL" target="_blank">{{ overview.jenkinsJob }}</a>
         </el-form-item>
-        <el-form-item label="仓库地址">
-          <div>{{ overview.homeURL }}</div>
+        <el-form-item :label="overview.gitType + '地址'">
+          <a :href="gitURL" target="_blank">查看仓库</a>
         </el-form-item>
         <el-form-item label="接入APP版本">
-          <div>{{ overview.appVersion }}</div>
+          <router-link :to="'/app/version/' + overview.appVersion">{{ overview.appVersion }}</router-link>
         </el-form-item>
         <el-form-item label="开发状态">
           <div>{{ overview.statusInfo }}</div>
@@ -43,6 +43,7 @@
 import axios from 'axios'
 import Markdown from '../Markdown'
 import conf from '../../conf'
+import config from '../../conf/config'
 export default {
   name: 'ModuleOverview',
   components: {
@@ -63,6 +64,12 @@ export default {
   computed: {
     canModify () {
       return this.moduleAdmin && !this.modifying && this.overview.status !== conf.TIMELINE_STATUS_DONE
+    },
+    jenkinsURL () {
+      return config.jenkinsURL + '/job/' + this.overview.jenkinsJob
+    },
+    gitURL () {
+      return this.overview.homeURL + '/tree/version/' + this.$route.params.version
     }
   },
   methods: {

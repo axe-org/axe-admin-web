@@ -11,18 +11,17 @@
 <script>
 import config from '../conf/config'
 export default {
-  name: 'OfflinePackage',
+  name: 'DynamicRouter',
   data () {
     return {
-      prdURL: config.offlinePackAdminServer,
-      devURL: `http://${config.devOfflinePackServerHost}:2677/admin`
+      prdURL: config.dynamicRouterAdminServer,
+      devURL: `http://${config.devDynamicRouterServerHost}:2679/admin`
     }
   }
 }
 </script>
 <style scoped>
 .frame {
-  margin-top: -20px;
   width: 100%;
   height: calc(100vh - 100px);
 }

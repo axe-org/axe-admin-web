@@ -16,7 +16,7 @@
             border
             style="width: 100%">
             <el-table-column
-              label="用户名">
+              label="用户名" min-width="100px">
               <template slot-scope="scope">
                 <span style="margin-left: 10px">{{ scope.row.userName }}</span>
               </template>
@@ -40,12 +40,12 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="参与模块">
+              label="参与模块" min-width="250px">
               <template slot-scope="scope">
-                <span style="margin-left: 10px">{{ scope.row.length }}</span>
+                <span style="margin-left: 10px">{{ scope.row.moduleList.join(',') }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="管理" width="250px">
+            <el-table-column label="管理" min-width="200px">
               <template slot-scope="scope">
                 <el-button class="margin-right:5px" size="mini" @click="showResetPasswordDialog(scope.row.userId)">重置密码</el-button>
                 <el-button class="margin-right:5px" size="mini" @click="showAdminSettingDialog(scope.row)">权限管理</el-button>
@@ -121,10 +121,8 @@
           <div>{{ appAdmin ? '有' : '无' }}</div>
         </el-form-item>
         <el-form-item label="负责模块">
-          <div class="module-list">
-            <div v-for="(moduleName, index) in moduleList" v-bind:key="index">
-              <el-button type="info" plain size="mini" style="margin-right: 8px" @click="jumpToModule(moduleName)">{{moduleName}}</el-button>
-            </div>
+          <div class="module-list" style="margin-top: 5px;">
+            <el-button v-for="module in moduleList" :key="module.id" type="info" plain size="mini" style="margin-right: 5px" @click="$router.push(`/module-overview/`+ module.id)">{{module.name}}</el-button>
           </div>
         </el-form-item>
         <el-form-item>
@@ -253,9 +251,6 @@ export default {
     },
     hideUserSetting () {
       this.showUserSettingView = false
-    },
-    jumpToModule (moduleName) {
-
     },
     loadPage (pageNum) {
       this.currentPage = pageNum
