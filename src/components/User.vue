@@ -138,6 +138,7 @@ import {LOGIN_MUTATION, LOGOUT_MUTATION} from '../store/mutation-types'
 import axios from 'axios'
 import md5 from 'md5'
 import { mapState } from 'vuex'
+import config from '../conf/config'
 export default {
   name: 'user',
   data () {
@@ -366,7 +367,9 @@ export default {
         .then((response) => {
           vm.fullscreenLoading = false
           if (response.data.error) {
-            vm.$store.commit(LOGOUT_MUTATION)
+            if (!config.guestMode) {
+              vm.$store.commit(LOGOUT_MUTATION)
+            }
           } else {
             // 登录成功
             vm.$store.commit(LOGIN_MUTATION, response.data)

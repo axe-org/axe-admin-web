@@ -1,20 +1,35 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import * as TYPES from './mutation-types'
+import config from '../conf/config'
 
 Vue.use(Vuex)
 
-const store = new Vuex.Store({
-  state: {
-    login: false,
-    userId: '',
-    userName: '',
-    lastActive: '',
-    userAdmin: false,
-    appAdmin: false,
+let initialState = {
+  login: false,
+  userId: '',
+  userName: '',
+  lastActive: '',
+  userAdmin: false,
+  appAdmin: false,
+  moduleList: [],
+  moduleIdList: []
+}
+if (config.guestMode) {
+  initialState = {
+    login: true,
+    userId: -1,
+    userName: 'guest',
+    lastActive: new Date(),
+    userAdmin: true,
+    appAdmin: true,
     moduleList: [],
     moduleIdList: []
-  },
+  }
+}
+
+const store = new Vuex.Store({
+  state: initialState,
   mutations: {
     [TYPES.LOGIN_MUTATION] (state, payload) {
       state.login = true
@@ -29,7 +44,6 @@ const store = new Vuex.Store({
         idlist.push(module.id)
       })
       state.moduleIdList = idlist
-      console.log('hello ,', payload.userName)
     },
     [TYPES.LOGOUT_MUTATION] (state) {
       state.login = false

@@ -13,14 +13,14 @@ module.exports = {
     proxyTable: {
       '/api': {// 需要代理的路径
         target: 'http://localhost:2678', // 需要代理的域名
-        changeOrigin: true, // 必须配置为true，才能正确代理
-        pathRewrite: {'^/api': ''}
+        changeOrigin: true // 必须配置为true，才能正确代理
+        // pathRewrite: {'^/api': ''}
       }
     },
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8082, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
-    autoOpenBrowser: true,
+    autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-

@@ -19,34 +19,34 @@
       </div>
     </div>
     <el-table :data="moduleList" v-loading="listLoading" border class="module-table">
-      <el-table-column label="模块名">
+      <el-table-column label="模块名"  align="center">
         <template slot-scope="scope">
           <router-link :to="`/module-overview/` + scope.row.moduleId">{{scope.row.name}}</router-link>
         </template>
       </el-table-column>
-      <el-table-column label="类型" prop="type"/>
+      <el-table-column label="类型" prop="type"  align="center"/>
       <el-table-column label="负责人" min-width="200px" style="white-space:nowrap;overflow:hidden;text-overflow: ellipsis;">
         <template slot-scope="scope">
           {{ scope.row.userList.join(',')}}
         </template>
       </el-table-column>
-      <el-table-column label="Jenkins任务">
+      <el-table-column min-width="110px" label="Jenkins任务" align="center">
         <template slot-scope="scope">
           <a :href="jenkinsJobBaseURL + scope.row.jenkinsJob" target="_blank">{{ scope.row.jenkinsJob }}</a>
         </template>
       </el-table-column>
-      <el-table-column label="仓库地址">
+      <el-table-column label="仓库地址" align="center">
         <template slot-scope="scope">
           <a :href="scope.row.homeURL" target="_blank">{{ scope.row.gitType }}</a>
         </template>
       </el-table-column>
-      <el-table-column label="版本数量" prop="versionCount"/>
-      <el-table-column label="最新prd版本">
+      <el-table-column label="版本数量" prop="versionCount" align="center"/>
+      <el-table-column label="最新发布版本" min-width="100px" align="center">
         <template slot-scope="scope">
           <router-link v-if="scope.row.maxPrdVersion" :to="`/module/${scope.row.moduleId}/version/${scope.row.maxPrdVersion}`">{{ scope.row.maxPrdVersion }}</router-link>
         </template>
       </el-table-column>
-      <el-table-column label="开发中版本" min-width="120px">
+      <el-table-column label="开发中版本" min-width="110px">
         <template slot-scope="scope">
           <router-link style="margin-right:3px;" v-for="item in scope.row.onGoingList" :key="item" :to="`/module/${scope.row.moduleId}/version/${item}`">{{item}}</router-link>
         </template>
@@ -56,7 +56,7 @@
       <el-pagination layout="prev, pager, next" :page-count="pageCount" :current-page.sync="pageNum" @current-change="loadModuleList"/>
     </div>
     <el-dialog title="添加模块" :visible.sync="addModuleDialogVisible" center width="500px" v-loading="addModuleLoading">
-      <el-form :model="addModuleInfo" ref="addModuleFrom" :rules="rules" label-width="120px">
+      <el-form :model="addModuleInfo" ref="addModuleFrom" :rules="rules" label-width="140px">
         <el-form-item label="模块名" prop="name">
           <el-input v-model="addModuleInfo.name" :maxlength="30" autofocus style="width: 250px"/>
         </el-form-item>
@@ -150,7 +150,6 @@ export default {
       axios.post(`/api/module/list`, form).then(response => {
         this.listLoading = false
         if (response.data.error) {
-          console.log(response.data.error)
           return this.$message.error('后台报错 ：' + response.data.error)
         }
         this.pageCount = response.data.pageCount

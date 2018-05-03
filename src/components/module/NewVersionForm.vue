@@ -66,18 +66,18 @@ export default {
         appVersion: ''
       },
       desc: {
-        startTime: '随便选一个开始时间， 需求开始也是开始。',
+        startTime: '计划开始开发的时间。',
         developFinished: '基本完成模块开发。',
-        testFinished: '自测完成，接入APP版本中。',
-        submitTime: '构建模块的生产版本。',
-        finishedTime: '模块版本彻底完成，可以构建prd版本为结束时间，也可以APP上线为结束时间。'
+        testFinished: '自测完成，接入到相应的APP版本中。要求在对应APP版本的开发完成之前。',
+        submitTime: '完成模块的发布版本的构建。要求在对应APP版本的测试完成之前。',
+        finishedTime: '完成模块的开发与接入，要求在对应APP版本的提交审核之前。'
       },
       title: {
-        startTime: '开始时间',
-        developFinished: '开发完成时间',
-        testFinished: '接入APP时间',
-        submitTime: 'release构建时间',
-        finishedTime: '完成时间'
+        startTime: '版本开始',
+        developFinished: '开发完成',
+        testFinished: '接入APP',
+        submitTime: '发布版本',
+        finishedTime: '版本完成'
       },
       rules: {
         version: [
@@ -176,7 +176,6 @@ export default {
       })
     },
     submitModuleVersion () {
-      console.log(this.newVersion)
       this.$refs['newVersionForm'].validate((valid) => {
         if (valid) {
           // 再对提交时间做一些简单的限制：
@@ -288,28 +287,6 @@ export default {
 .main-container {
   height: 100%;
   width: 100%;
-}
-.top-float {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.mid {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-}
-.module-list {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
 }
 .desc {
   margin-top: 5px;

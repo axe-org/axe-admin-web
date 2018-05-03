@@ -16,7 +16,7 @@
           <a :href="gitURL" target="_blank">查看仓库</a>
         </el-form-item>
         <el-form-item label="接入APP版本">
-          <router-link :to="'/app/version/' + overview.appVersion">{{ overview.appVersion }}</router-link>
+          <router-link :to="'/app-version/' + overview.appVersion">{{ overview.appVersion }}</router-link>
         </el-form-item>
         <el-form-item label="开发状态">
           <div>{{ overview.statusInfo }}</div>

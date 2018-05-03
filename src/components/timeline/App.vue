@@ -1,6 +1,6 @@
 <template>
-  <el-container class="body" v-loading="refreshLoading">
-    <el-main class="hmid">
+  <el-container v-loading="refreshLoading">
+    <el-main class="hmid scroll">
       <div>
         <div class="space-between">
           <el-button icon="el-icon-refresh" @click="loadTimelineInfo">刷新</el-button>
@@ -122,9 +122,12 @@ import conf from '../../conf'
 import dateformat from 'dateformat'
 export default {
   name: 'AppTimeline',
+  props: {
+    lineId: Number
+  },
   data () {
     return {
-      lineId: '',
+      // lineId: '',
       refreshLoading: false,
       appVersion: '',
       versionCreatedTime: '',
@@ -222,7 +225,6 @@ export default {
         } else {
           this.selectedAction = undefined // 设置选中为空
           this.appVersion = response.data.appVersionInfo.version
-          document.title = this.appVersion
           this.versionCreatedTime = response.data.appVersionInfo.createdTime
           let appStatusTypes = ['开发中', '未开始', '已完成']
           this.appState = appStatusTypes[response.data.appVersionInfo.status]
@@ -488,27 +490,21 @@ export default {
       })
     }
   },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      vm.lineId = to.params.lineId
-      vm.loadTimelineInfo()
-    })
-  },
-  beforeRouteUpdate (to, from, next) {
-    next()
-    this.lineId = to.params.lineId
+  mounted () {
     this.loadTimelineInfo()
   }
 }
 </script>
 
 <style scoped>
-  .body {
-    height: 100%;
-  }
   .desc {
     margin-top: 9px;
     line-height:20px;
     font-size: 12.5px;
+  }
+  .scroll {
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
   }
 </style>

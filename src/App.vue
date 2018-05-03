@@ -85,57 +85,46 @@ export default {
       }).then((response) => {
         this.fullscreenLoading = false
         if (response.data.error) {
-          console.log(response.data.error)
           this.$store.commit(LOGOUT_MUTATION)
           this.$message.error('登录失败， 后台报错 ： ' + response.data.error)
         } else {
           // 登录成功
           this.$store.commit(LOGIN_MUTATION, response.data)
         }
-      }).catch((error) => {
-        console.log(error.message)
+      }).catch(() => {
         this.fullscreenLoading = false
       })
     }
   },
   mounted () {
-    // 设置路由记录， 以切换导航时，记录原有页面内容。
-    let routeRecords = {}
     this.$router.beforeEach((to, from, next) => {
       if (to.meta && to.meta.title) {
         document.title = to.meta.title
       }
-      let split = to.fullPath.split('/')
-      if (split.length < 2) {
-        return next()
+      if (to.path !== this.activeRoute) {
+        this.activeRoute = to.path
       }
-      let root = split[1]
-      // 设置当前选中的菜单。 这个ele菜单好难受啊。
-      this.activeRoute = '/' + root
-      if (split.length === 2) {
-        next(routeRecords[root])
-      } else {
-        routeRecords[root] = to.fullPath
-        next()
-      }
+      next()
     })
     // 检测登录
     this.fullscreenLoading = true
     axios.post('/api/user/check').then((response) => {
       this.fullscreenLoading = false
       if (response.data.error) {
-        console.log(response.data)
-        this.$store.commit(LOGOUT_MUTATION)
+        if (!config.guestMode) {
+          this.$store.commit(LOGOUT_MUTATION)
+        }
       } else {
         // 登录成功
         this.$store.commit(LOGIN_MUTATION, response.data)
       }
-    }).catch((error) => {
-      console.log(error.message)
+    }).catch(() => {
       this.fullscreenLoading = false
     })
     if (this.$route.fullPath === '/') {
       this.$router.replace('/user')
+    } else {
+      this.activeRoute = this.$route.fullPath
     }
   }
 }

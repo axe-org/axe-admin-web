@@ -23,7 +23,7 @@
         <el-form-item label="版本数量" style="margin-top: -17px;">
           <div>{{ moduleInfo.versionCount }}</div>
         </el-form-item>
-        <el-form-item label="最新prd版本" style="margin-top: -17px;">
+        <el-form-item label="最新发布版本" style="margin-top: -17px;">
           <div>{{ moduleInfo.maxPrdVersion }}</div>
         </el-form-item>
         <el-form-item label="开发中版本" style="margin-top: -17px;">
@@ -37,22 +37,30 @@
           <el-button type="primary" @click="submitAdminChange">确 定</el-button>
         </div>
       </el-dialog>
-      <el-button type="primary" @click="showAdminManagerDialog">用户管理</el-button>
+      <el-button style="margin-top: 20px;" type="primary" v-if="moduleAdmin" @click="showAdminManagerDialog">用户管理</el-button>
       <br>
-      <new-version-form :module-id="$route.params.moduleId" @success="addVersionSuccess"/>
+      <new-version-form v-if="moduleAdmin" :module-id="$route.params.moduleId" @success="addVersionSuccess"/>
     </div>
     <div class="right" v-loading="moduleVersionsLoading">
       <el-table :data="versionList" border class="">
-        <el-table-column label="版本号">
+        <el-table-column label="版本号" align="center">
           <template slot-scope="scope">
-            <router-link :to="`/module/${$route.params.moduleId}/version/${scope.row.version}`">{{ scope.row.version }}</router-link>
+            <el-button size="small" @click="$router.push(`/module/${$route.params.moduleId}/version/${scope.row.version}`)" plain type="primary">
+              {{ scope.row.version }}
+            </el-button>
+        </template>
+        </el-table-column>
+        <el-table-column label="当前状态" prop="statusInfo" align="center"/>
+        <el-table-column label="APP版本" prop="appVersion" align="center">
+          <template slot-scope="scope">
+            <el-button size="small" @click="$router.push('/app-version/' + scope.row.appVersion)" plain>
+              {{ scope.row.appVersion }}
+            </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="当前状态" prop="status"/>
-        <el-table-column label="接入版本" prop="appVersion"/>
-        <el-table-column label="查看详情">
+        <el-table-column label="查看详情" align="center">
           <template slot-scope="scope">
-            <router-link target="_blank" :to="`/module/${$route.params.moduleId}/version/${scope.row.version}`" class="el-button el-button--default el-button--small">查看详情</router-link>
+            <el-button size="small" @click="openModuleVersion(scope.row.version)" plain type="warning">查看详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,6 +74,7 @@
 import NewVersionForm from './NewVersionForm'
 import axios from 'axios'
 import config from '../../conf/config'
+import conf from '../../conf'
 export default {
   name: 'ModuleOverview',
   components: {
@@ -98,9 +107,18 @@ export default {
   computed: {
     jenkinsURL () {
       return config.jenkinsURL + '/job/' + this.moduleInfo.jenkinsJob
+    },
+    moduleAdmin () {
+      if (config.guestMode && this.$store.state.userId === -1) {
+        return true
+      }
+      return this.$store.state.moduleIdList.includes(parseInt(this.$route.params.moduleId))
     }
   },
   methods: {
+    openModuleVersion (version) {
+      window.open(`/#/module/${this.$route.params.moduleId}/version/${version}`)
+    },
     loadModuleInfo () {
       this.moduleInfoLoading = true
       axios.get(`/api/module/info?moduleId=${this.$route.params.moduleId}`).then(res => {
@@ -145,9 +163,23 @@ export default {
             duration: 0
           })
         }
+        res.data.versionList.forEach(version => {
+          let statusInfo = '未开始'
+          if (version.status === conf.TIMELINE_STATUS_DOING) {
+            if (version.released) {
+              statusInfo = '已发布版本'
+            } else if (version.imported) {
+              statusInfo = '已接入APP'
+            } else {
+              statusInfo = '开发中'
+            }
+          } else if (version.status === conf.TIMELINE_STATUS_DONE) {
+            statusInfo = '已完成'
+          }
+          version['statusInfo'] = statusInfo
+        })
         this.versionList = res.data.versionList
         this.pageCount = res.data.pageCount
-        console.log(res.data)
       }).catch(err => {
         this.$message({
           showClose: true,
@@ -186,7 +218,7 @@ export default {
         deleted: deleted,
         added: added
       }).then((res) => {
-        this.moduleInfoLoading = false
+        this.moduleAdminLoading = false
         if (res.data.error) {
           return this.$message({
             showClose: true,
@@ -202,7 +234,7 @@ export default {
         this.moduleAdminDialogVisible = false
         this.loadModuleInfo()
       }).catch(err => {
-        this.moduleInfoLoading = false
+        this.moduleAdminLoading = false
         this.$message({
           showClose: true,
           message: err.message,
@@ -226,10 +258,12 @@ export default {
         }
         let allUsers = []
         let adminUsers = []
+        let self = this.$store.state.userName
         res.data.adminUsers.forEach(user => {
           allUsers.push({
             key: user.userId,
-            label: user.userName
+            label: user.userName,
+            disabled: user.userName === self
           })
           adminUsers.push(user.userId)
         })

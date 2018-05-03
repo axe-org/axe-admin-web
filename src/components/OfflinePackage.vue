@@ -1,10 +1,11 @@
 <template>
-  <el-tabs>
+  <iframe v-if="guestMode" style="width: 100%;height: calc(100% - 10px); margin-top: -20px;" frameborder=0 :src="prdURL"/>
+  <el-tabs v-else>
     <el-tab-pane label="测试环境">
-      <iframe class="frame" frameborder=0 name="showHere" :src="devURL"/>
+      <iframe class="frame" frameborder=0 :src="devURL"/>
     </el-tab-pane>
     <el-tab-pane label="生产环境">
-      <iframe class="frame" frameborder=0 name="showHere" :src="prdURL"/>
+      <iframe class="frame" frameborder=0 :src="prdURL"/>
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -15,7 +16,8 @@ export default {
   data () {
     return {
       prdURL: config.offlinePackAdminServer,
-      devURL: `http://${config.devOfflinePackServerHost}:2677/admin`
+      devURL: `http://${config.devOfflinePackServerHost}:2677/admin`,
+      guestMode: config.guestMode
     }
   }
 }

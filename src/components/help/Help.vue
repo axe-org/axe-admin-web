@@ -1,7 +1,7 @@
 <template>
   <el-tabs tab-position="right" style="width: 100%; height: 100%;">
     <el-tab-pane v-for="item in docs" :label="item.title" :key="item.title">
-      <div style="width: 100%;height: 100vh;overflow:auto;">
+      <div style="width: 100%;height: 100vh;overflow:auto;" v-once>
         <markdown class="body" :content="item.content"/>
       </div>
     </el-tab-pane>

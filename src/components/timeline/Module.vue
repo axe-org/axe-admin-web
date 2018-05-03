@@ -507,7 +507,6 @@ export default {
               // 同时，刷新当前页面信息。
               this.loadTimelineInfo()
               // 对于完成事件， 发送通知，以通知外部刷新界面
-              console.log('refresh')
               this.$emit('refresh')
             }
           }).catch(err => {

@@ -255,7 +255,6 @@ export default {
           // 表示结束
           this.buildInfo = res.data
           this.buildFinished = true
-          console.log(res.data)
           if (status === conf.JENKINS_JOB_BUILD_STATUS_SUCCESS) {
             this.buildStatusText = '构建成功 ！！！'
             this.$message({

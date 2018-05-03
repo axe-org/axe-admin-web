@@ -12,6 +12,9 @@ module.exports = {
   devOfflinePackServerHost: 'localhost',
   devDynamicRouterServerHost: 'localhost',
   appName: 'MyAPP', // 应用展示名称。
+  appGitHome: 'https://github.com/axe-org/demo-app',
+  appGitType: 'github', // github或gitlab 。生产情况是使用的gitlab的，但是我这里要在github上展示。。
+  guestMode: true, // 访客模式， 默认是关。 开放访客模式，不再对所有权限做登录校验，但是关键的增删改接口还是会进行校验的。
   jenkinsURL: 'http://jenkins.luoxianming.cn', // jeninsURL
   jenkinsUser: 'xxxxx',
   jenkinsPassword: 'xxxxx',

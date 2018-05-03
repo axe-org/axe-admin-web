@@ -27,6 +27,7 @@ import ModuleTimeline from '../timeline/Module'
 import VersionManager from './VersionManager'
 import Markdown from '../Markdown'
 import conf from '../../conf'
+import config from '../../conf/config'
 export default {
   name: 'ModuleDetail',
   components: {
@@ -74,6 +75,9 @@ export default {
   },
   computed: {
     moduleAdmin () {
+      if (config.guestMode && this.$store.state.userId === -1) {
+        return true
+      }
       return this.$store.state.moduleIdList.includes(parseInt(this.$route.params.moduleId))
     },
     moduleId () {
@@ -105,7 +109,6 @@ export default {
         this.timelineInfo = res.data.timelineInfo
         this.appVersionInfo = res.data.appVersionInfo
         this.moduleInfo = res.data.moduleInfo
-        console.log(res.data)
         document.title = `${this.moduleInfo.name}/${this.$route.params.version}`
         // 组装数据
         let overview = {}
@@ -151,21 +154,17 @@ export default {
         info['moduleId'] = this.moduleInfo.moduleId
         info['versionId'] = this.moduleVersionInfo.versionId
         this.versionManagerInfo = info
-        console.log(info)
         this.initialLoaded = true
         let dependencyImage = `/api/static/module/${this.moduleVersionInfo.versionId}/dependency.svg`
         axios.head(dependencyImage).then(() => {
           this.dependencyImage = dependencyImage
-        }).catch(err => {
-          console.log(err)
+        }).catch(() => {
         })
         axios.get(`/api/static/module/${this.moduleVersionInfo.versionId}/API.h`).then(res => {
           // 设置markdown 代码格式，即每行开头添加一个tab
           let rowContent = '    ' + res.data
           this.APIContent = rowContent.replace(/\n/g, '\n    ')
-        }).catch(err => {
-          console.log(err)
-          // 加载失败，暂时错误页面
+        }).catch(() => {
         })
       }).catch(err => {
         this.versionInfoLoading = false

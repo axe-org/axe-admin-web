@@ -46,6 +46,7 @@ export default {
   },
   watch: {
     actionList: function (newlist) {
+      // TODO ， 这里的 today处理还是有问题
       let actions = newlist.concat()
       if (this.showToday) {
         let today = new Date()
@@ -56,7 +57,6 @@ export default {
           if (today && setDate > today) {
             action.today = true
             today = false
-            console.log(action)
           }
         })
       }
