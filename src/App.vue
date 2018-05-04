@@ -3,31 +3,31 @@
     <el-aside style="height: 100%;" width="180px">
       <el-menu :default-active="activeRoute" style="height: 100%;" background-color="#545c64" :router="true" text-color="#fff" active-text-color="#ffd04b">
         <el-menu-item index="/app">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-mobile-phone"></i>
           <span slot="title">{{ appName }}</span>
         </el-menu-item>
         <el-menu-item index="/modulelist">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-tickets"></i>
           <span slot="title">模块列表</span>
         </el-menu-item>
         <el-menu-item index="/import">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-bell"></i>
           <span slot="title">接入管理</span>
         </el-menu-item>
         <el-menu-item index="/dynamic-router">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-rank"></i>
           <span slot="title">动态路由</span>
         </el-menu-item>
         <el-menu-item index="/offpack">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-download"></i>
           <span slot="title">离线包</span>
         </el-menu-item>
         <el-menu-item index="/help">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-search"></i>
           <span slot="title">说明与文档</span>
         </el-menu-item>
         <el-menu-item index="/user">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-setting"></i>
           <span slot="title">用户信息</span>
         </el-menu-item>
       </el-menu>

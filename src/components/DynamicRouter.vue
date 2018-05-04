@@ -15,8 +15,8 @@ export default {
   name: 'DynamicRouter',
   data () {
     return {
-      prdURL: config.dynamicRouterAdminServer,
-      devURL: `http://${config.devDynamicRouterServerHost}:2679/admin`,
+      prdURL: config.dynamicRouterAdminURL,
+      devURL: config.devDynamicRouterAdminURL,
       guestMode: config.guestMode
     }
   }

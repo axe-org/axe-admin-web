@@ -38,6 +38,11 @@ const store = new Vuex.Store({
       state.userAdmin = payload.userAdmin
       state.userId = payload.userId
       state.appAdmin = payload.appAdmin
+      if (payload.appAdmin) {
+        // 通过权限设定来确保生产环境的安全性，只有app管理员才能正确访问 两个页面。
+        config.dynamicRouterAdminURL += payload.dynamicServerAccessControlPath
+        config.offlinePackAdminURL += payload.offlineServerAccessControlPath
+      }
       state.moduleList = payload.moduleList
       let idlist = []
       payload.moduleList.forEach(module => {

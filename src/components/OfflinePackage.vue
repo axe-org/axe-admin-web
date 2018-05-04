@@ -15,8 +15,8 @@ export default {
   name: 'OfflinePackage',
   data () {
     return {
-      prdURL: config.offlinePackAdminServer,
-      devURL: `http://${config.devOfflinePackServerHost}:2677/admin`,
+      prdURL: config.offlinePackAdminURL,
+      devURL: config.devOfflinePackAdminURL,
       guestMode: config.guestMode
     }
   }
