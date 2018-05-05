@@ -160,9 +160,7 @@ export default {
       // 获取进行中app版本号
       axios.get('/api/app/ongoing').then(res => {
         if (res.data.error) {
-          if (this.selectedAppVersion === '') {
-            this.loading = false
-          }
+          this.loading = false
           return this.$message({
             showClose: true,
             message: res.data.error,
@@ -188,6 +186,7 @@ export default {
           }
         })
         if (unStartVersions.length === 0 && startedVersions.length === 0) {
+          this.loading = false
           return this.$message({
             showClose: true,
             message: '请先添加APP版本， 才能进行模块接入管理！！！',
