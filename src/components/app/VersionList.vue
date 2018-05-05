@@ -7,7 +7,7 @@
       </el-radio-group>
       <div class="option-right">
         <el-dialog :append-to-body="true" style="margin-top: -10vh;" title="添加版本" :visible.sync="addVersionDialogVisible" center width="650px" :show-close="false" v-loading="submitLoading">
-          <el-form :model="newAppVersion" ref="newAppVersionForm" :rules="rules" label-width="120px">
+          <el-form :model="newAppVersion" ref="newAppVersionForm" inline-message :rules="rules" label-width="120px">
             <el-form-item label="版本号" prop="version">
               <el-input v-model="newAppVersion.version" :maxlength='11' style="width: 220px;"></el-input>
             </el-form-item>
