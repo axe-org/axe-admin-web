@@ -16,34 +16,8 @@ let config = {
 // 访客模式， 不读配置， 固定写死。 发布的版本分为正常版本和访客版本。
 config['guestMode'] = false
 
-let ipRegex = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
-
 axios.get('/api/config').then(res => {
-  Object.assign(config, res.data)
-  // 从后台刷新时， 根据host来重新设定AdminURL
-  if (config.dynamicRouterHost === 'localhost' || ipRegex.test(config.dynamicRouterHost)) {
-    config.dynamicRouterAdminURL = `http://${config.dynamicRouterHost}:2669/admin/`
-  } else {
-    config.dynamicRouterAdminURL = `http://${config.dynamicRouterHost}/admin/`
-  }
-
-  if (config.devDynamicRouterHost === 'localhost' || ipRegex.test(config.devDynamicRouterHost)) {
-    config.devDynamicRouterAdminURL = `http://${config.devDynamicRouterHost}:2679/admin/`
-  } else {
-    config.devDynamicRouterAdminURL = `http://${config.devDynamicRouterHost}/admin/`
-  }
-
-  if (config.offlinePackHost === 'localhost' || ipRegex.test(config.offlinePackHost)) {
-    config.offlinePackAdminURL = `http://${config.offlinePackHost}:2667/admin/`
-  } else {
-    config.offlinePackAdminURL = `http://${config.offlinePackHost}/admin/`
-  }
-
-  if (config.devOfflinePackHost === 'localhost' || ipRegex.test(config.devOfflinePackHost)) {
-    config.devOfflinePackAdminURL = `http://${config.devOfflinePackHost}:2677/admin/`
-  } else {
-    config.devOfflinePackAdminURL = `http://${config.devOfflinePackHost}/admin/`
-  }
+  config = res.data
 }).catch(err => {
   Message({
     duration: 0,
