@@ -11,7 +11,7 @@
     </el-tab-pane>
     <el-tab-pane label="依赖情况" name="dependency">
       <div v-if="initialLoaded && dependencyImage !== ''" class="scroll-main-view" style="margin-top: 20px;display: flex;justify-content:center;aligin-items: center;">
-        <img :src="dependencyImage" @click="openDenpencyImage">
+        <img style="max-width: 100%;height: auto;" :src="dependencyImage" @click="openDenpencyImage">
       </div>
     </el-tab-pane>
     <el-tab-pane label="管理" name="manager" v-if="moduleAdmin">
