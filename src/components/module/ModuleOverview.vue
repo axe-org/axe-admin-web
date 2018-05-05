@@ -181,6 +181,7 @@ export default {
         this.versionList = res.data.versionList
         this.pageCount = res.data.pageCount
       }).catch(err => {
+        this.moduleVersionsLoading = false
         this.$message({
           showClose: true,
           message: err.message,

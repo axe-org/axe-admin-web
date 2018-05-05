@@ -126,7 +126,8 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" @click="logOut">退出登录</el-button>
+          <el-button v-if="guestLogin" type="primary" @click="showLoginView">登 录</el-button>
+          <el-button v-else type="danger" @click="logOut">退出登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -194,9 +195,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(['login', 'userName', 'lastActive', 'userAdmin', 'appAdmin', 'moduleList'])
+    ...mapState(['login', 'userName', 'lastActive', 'userAdmin', 'appAdmin', 'moduleList']),
+    guestLogin () {
+      return config.guestMode && this.$store.state.userId === -1
+    }
   },
   methods: {
+    showLoginView () {
+      this.$store.commit(LOGOUT_MUTATION)
+    },
     submitForm () {
       this.fullscreenLoading = true
       axios.post('/api/user/logIn', {

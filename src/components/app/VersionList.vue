@@ -296,6 +296,14 @@ export default {
         })
         this.versionList = versionList
         this.pageCount = res.data.pageCount
+      }).catch(err => {
+        this.listLoading = false
+        this.$message({
+          duration: 0,
+          type: 'error',
+          message: err.message,
+          showClose: true
+        })
       })
     }
   },

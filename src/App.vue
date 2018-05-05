@@ -91,8 +91,14 @@ export default {
           // 登录成功
           this.$store.commit(LOGIN_MUTATION, response.data)
         }
-      }).catch(() => {
+      }).catch((err) => {
         this.fullscreenLoading = false
+        this.$message.error({
+          showClose: true,
+          duration: 0,
+          type: 'error',
+          message: err.message
+        })
       })
     }
   },

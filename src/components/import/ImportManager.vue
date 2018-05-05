@@ -215,9 +215,7 @@ export default {
           this.loadImportList()
         }
       }).catch(err => {
-        if (this.selectedAppVersion === '') {
-          this.loading = false
-        }
+        this.loading = false
         this.$message({
           showClose: true,
           message: err.message,
@@ -276,6 +274,7 @@ export default {
           this.$alert('当前 Jenkins Job 正在构建中， 请检测jenkins状态，确认空闲后重试！！！')
         }
       }).catch(err => {
+        this.loading = false
         this.$alert('检查jenkins状态出错， 报错内容 : \n' + err.message + '\n 请稍后重试！！！')
       })
     },
