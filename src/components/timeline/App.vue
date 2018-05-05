@@ -1,7 +1,7 @@
 <template>
   <el-container v-loading="refreshLoading">
     <el-main class="hmid scroll">
-      <div>
+      <div style="width: 90%;height: 100%:">
         <div class="space-between">
           <el-button icon="el-icon-refresh" @click="loadTimelineInfo">刷新</el-button>
           <el-button v-if="canAddAction" icon="el-icon-plus" @click="addActionDialogVisable = true">新增</el-button>

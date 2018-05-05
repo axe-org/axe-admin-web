@@ -1,7 +1,7 @@
 <template>
   <el-container v-loading="refreshLoading">
     <el-main class="hmid scroll">
-      <div>
+      <div style="width: 90%;height: 100%:">
         <div class="space-between">
           <el-button icon="el-icon-refresh" @click="loadTimelineInfo">刷新</el-button>
           <el-button v-if="canAddAction" icon="el-icon-plus" @click="addActionDialogVisable = true">新增</el-button>
@@ -12,15 +12,6 @@
     <el-aside style="height: 100%;" width="240px">
       <div class="hmid">
         <el-form status-icon label-width="80px" style="width: 100%;" size="mini">
-          <!-- <el-form-item label="APP版本">
-            <div>{{ appVersion }}</div>
-          </el-form-item>
-          <el-form-item label="创建时间">
-            <div>{{ versionCreatedTime }}</div>
-          </el-form-item>
-          <el-form-item label="当前状态">
-            <div>{{ appState }}</div>
-          </el-form-item> -->
         </el-form>
         <el-form v-if="selectedAction" status-icon label-width="80px" style="width: 100%;">
           <el-form-item label="-事件详情-">
@@ -282,6 +273,8 @@ export default {
           action.right = false
           action.message = action.detail
           if (action.type !== conf.TIMELINE_ACTION_TYPE_USERSET) {
+            // 修改标题，加上 APP
+            action.title = 'APP-' + action.title
             actionList.push(action)
           }
         })

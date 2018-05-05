@@ -12,9 +12,9 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {// 需要代理的路径
-        target: 'http://localhost:2678', // 需要代理的域名
+        // target: 'http://localhost:2678', // 需要代理的域名
+        target: 'https://demo.axe-org.cn',
         changeOrigin: true // 必须配置为true，才能正确代理
-        // pathRewrite: {'^/api': ''}
       }
     },
     // Various Dev Server settings

@@ -44,7 +44,7 @@
           <el-input v-model="loginForm.userName"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-          <el-input type="password" v-model="loginForm.password" auto-complete="on"></el-input>
+          <el-input type="password" v-model="loginForm.password" auto-complete="on" @keyup.enter.native="logIn"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="logIn" v-loading.fullscreen.lock="fullscreenLoading">登录</el-button>
