@@ -22,10 +22,10 @@
           <i class="el-icon-download"></i>
           <span slot="title">离线包</span>
         </el-menu-item>
-        <el-menu-item index="/help">
+        <!-- <el-menu-item index="/help">
           <i class="el-icon-search"></i>
           <span slot="title">说明与文档</span>
-        </el-menu-item>
+        </el-menu-item> -->
         <el-menu-item index="/user">
           <i class="el-icon-setting"></i>
           <span slot="title">用户信息</span>

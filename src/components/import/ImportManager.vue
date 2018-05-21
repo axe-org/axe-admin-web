@@ -187,12 +187,7 @@ export default {
         })
         if (unStartVersions.length === 0 && startedVersions.length === 0) {
           this.loading = false
-          return this.$message({
-            showClose: true,
-            message: '请先添加APP版本， 才能进行模块接入管理！！！',
-            type: 'error',
-            duration: 0
-          })
+          return
         }
         let selectVersion = ''
         if (unStartVersions.length) {

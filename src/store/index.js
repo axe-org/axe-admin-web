@@ -12,6 +12,8 @@ let initialState = {
   lastActive: '',
   userAdmin: false,
   appAdmin: false,
+  dynamicRouterAdminURL: config.dynamicRouterAdminURL,
+  offlinePackAdminURL: config.offlinePackAdminURL,
   moduleList: [],
   moduleIdList: []
 }
@@ -21,6 +23,8 @@ if (config.guestMode) {
     userId: -1,
     userName: 'guest',
     lastActive: new Date(),
+    dynamicRouterAdminURL: config.dynamicRouterAdminURL,
+    offlinePackAdminURL: config.offlinePackAdminURL,
     userAdmin: true,
     appAdmin: true,
     moduleList: [],
@@ -38,11 +42,12 @@ const store = new Vuex.Store({
       state.userAdmin = payload.userAdmin
       state.userId = payload.userId
       state.appAdmin = payload.appAdmin
-      if (payload.appAdmin && !config.accessProductionServer) {
-        config.accessProductionServer = true
-        // 通过权限设定来确保生产环境的安全性，只有app管理员才能正确访问 两个页面。
-        config.dynamicRouterAdminURL += payload.dynamicServerAccessControlPath
-        config.offlinePackAdminURL += payload.offlineServerAccessControlPath
+      if (payload.appAdmin) {
+        state.dynamicRouterAdminURL = config.dynamicRouterAdminURL + payload.dynamicServerAccessControlPath
+        state.offlinePackAdminURL = config.offlinePackAdminURL + payload.offlineServerAccessControlPath
+      } else {
+        state.dynamicRouterAdminURL = config.dynamicRouterAdminURL
+        state.offlinePackAdminURL = config.offlinePackAdminURL
       }
       state.moduleList = payload.moduleList
       let idlist = []

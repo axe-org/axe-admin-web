@@ -192,10 +192,10 @@ export default {
             })
           }
           // 项目间隔不能超过三个月。
-          if (this.newAppVersion.finishedTime.getTime() >= Date.now() + 30 * 24 * 60 * 60 * 1000) {
+          if (this.newAppVersion.finishedTime.getTime() >= Date.now() + 3 * 30 * 24 * 60 * 60 * 1000) {
             return this.$message({
               showClose: true,
-              message: '项目计划不能成果三个月！！！',
+              message: '项目计划不能超过三个月！！！',
               type: 'error',
               duration: 0
             })
